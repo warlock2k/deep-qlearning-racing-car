@@ -1,7 +1,6 @@
 # AI for Self Driving Car
 
 # Importing the libraries
-
 import numpy as np
 import random
 import os
@@ -33,7 +32,8 @@ class Network(nn.Module):
 # Implementing Experience Replay
 
 class ReplayMemory(object):
-    
+    # We use replay memory to deal with correlations between two consecutive states.
+    # what we do is store several transitions and from this we sample a batch of random transitions
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = []
@@ -62,17 +62,27 @@ class Dqn():
         self.last_reward = 0
     
     def select_action(self, state):
-        probs = F.softmax(self.model(Variable(state, volatile = True))*1000) # T=100
-        action = probs.multinomial()
+        # Softmax function helps in exploration
+        # This helps us sample  actions in a particular state based on the distributions outputted by the neural network
+        k = self.model(Variable(state, volatile = True))*1000
+        probs = F.softmax(self.model(Variable(state, volatile = True)) * 1000) # T=100
+        action = probs.multinomial(num_samples=1)
         return action.data[0,0]
     
     def learn(self, batch_state, batch_next_state, batch_reward, batch_action):
+        # Here we predict Q(St, At) in batch for several Sts
         outputs = self.model(batch_state).gather(1, batch_action.unsqueeze(1)).squeeze(1)
+
+        # Here we calculate (target = gamma * (argmax(Q(St+1, a) + Rt) in batch for several Sts
         next_outputs = self.model(batch_next_state).detach().max(1)[0]
-        target = self.gamma*next_outputs + batch_reward
+        target = self.gamma * next_outputs + batch_reward
+
+        # Calculate the td_loss function from the targets and predictions
         td_loss = F.smooth_l1_loss(outputs, target)
         self.optimizer.zero_grad()
-        td_loss.backward(retain_variables = True)
+
+        # propogate this loss over the neural network so that it adjusts its weights which minimize this loss using gradient descent.
+        td_loss.backward(retain_graph = True)
         self.optimizer.step()
     
     def update(self, reward, new_signal):
