@@ -247,12 +247,6 @@ class Game(Widget):
         last_signal = [self.car.signal1, self.car.signal2, self.car.signal3, orientation, -orientation]
         last_signal1 = [self.car1.signal1, self.car1.signal2, self.car1.signal3, orientation1, -orientation1]
 
-        if(last_signal[0] == 10 or last_signal[1] == 10 or last_signal[2] == 10):
-            last_reward = last_reward + -2
-
-        if(last_signal1[0] == 10 or last_signal1[1] == 10 or last_signal1[2] == 10):
-            last_reward1 = last_reward1 + -2
-
         action = brain.update(last_reward, last_signal)
         action1 = brain1.update(last_reward1, last_signal1)
         
@@ -284,26 +278,26 @@ class Game(Widget):
             
         else: # otherwise
             self.car.velocity = Vector(2, 0).rotate(self.car.angle)
-            last_reward = 0.5
+            last_reward = 3
             print("car-1", 0, goal_x, goal_y, distance, int(self.car.x),int(self.car.y), im.read_pixel(int(self.car.x),int(self.car.y)))
 
             if distance < last_distance:
-                last_reward = 1
+                last_reward = 0.2
             else:
-                last_reward = last_reward +(-0.5)
+                last_reward = last_reward +(-0.2)
 
-        if self.car.x < 5:
-            self.car.x = 5
-            last_reward = -5
-        if self.car.x > self.width - 5:
-            self.car.x = self.width - 5
-            last_reward = -5
-        if self.car.y < 5:
-            self.car.y = 5
-            last_reward = -5
-        if self.car.y > self.height - 5:
-            self.car.y = self.height - 5
-            last_reward = -5
+        # if self.car.x < 5:
+        #     self.car.x = 5
+        #     last_reward = -5
+        # if self.car.x > self.width - 5:
+        #     self.car.x = self.width - 5
+        #     last_reward = -5
+        # if self.car.y < 5:
+        #     self.car.y = 5
+        #     last_reward = -5
+        # if self.car.y > self.height - 5:
+        #     self.car.y = self.height - 5
+        #     last_reward = -5
 
         if distance < 25:
             if swap == 1:
@@ -327,26 +321,26 @@ class Game(Widget):
             last_reward1 = -5
         else: # otherwise
             self.car1.velocity = Vector(2, 0).rotate(self.car1.angle)
-            last_reward1 = 1
+            last_reward1 = 3
             print("car-2", 0, goal_x1, goal_y1, distance1, int(self.car1.x),int(self.car1.y), im.read_pixel(int(self.car1.x),int(self.car1.y)))
 
             if distance1 < last_distance1:
                 last_reward1 = 0.2
             else:
-                last_reward1 = last_reward1 +(-0.5)
+                last_reward1 = last_reward1 +(-0.2)
 
-        if self.car1.x < 5:
-            self.car1.x = 5
-            last_reward1 = -5
-        if self.car1.x > self.width - 5:
-            self.car1.x = self.width - 5
-            last_reward1 = -5
-        if self.car1.y < 5:
-            self.car1.y = 5
-            last_reward1 = -5
-        if self.car1.y > self.height - 5:
-            self.car1.y = self.height - 5
-            last_reward1 = -5
+        # if self.car1.x < 5:
+        #     self.car1.x = 5
+        #     last_reward1 = -5
+        # if self.car1.x > self.width - 5:
+        #     self.car1.x = self.width - 5
+        #     last_reward1 = -5
+        # if self.car1.y < 5:
+        #     self.car1.y = 5
+        #     last_reward1 = -5
+        # if self.car1.y > self.height - 5:
+        #     self.car1.y = self.height - 5
+        #     last_reward1 = -5
 
         if distance1 < 25:
             if swap1 == 1:
