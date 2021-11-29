@@ -21,12 +21,14 @@ class Network(nn.Module):
         self.nb_action = nb_action
         self.fc1 = nn.Linear(input_size, 30)
         self.fc2 = nn.Linear(30, 30)
-        self.fc3 = nn.Linear(30, nb_action)
+        self.fc3 = nn.Linear(30, 30)
+        self.fc4 = nn.Linear(30, nb_action)
     
     def forward(self, state):
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
-        q_values = self.fc3(x)
+        x = F.relu(self.fc3(x))
+        q_values = self.fc4(x)
         return q_values
 
 # Implementing Experience Replay
@@ -90,6 +92,7 @@ class Dqn():
         self.memory.push((self.last_state, new_state, torch.LongTensor([int(self.last_action)]), torch.Tensor([self.last_reward])))
         action = self.select_action(new_state)
         if len(self.memory.memory) > 100:
+            # Learn only after gathering enough experiences in the memory buffer, in batches of 100.
             batch_state, batch_next_state, batch_action, batch_reward = self.memory.sample(100)
             self.learn(batch_state, batch_next_state, batch_reward, batch_action)
         self.last_action = action

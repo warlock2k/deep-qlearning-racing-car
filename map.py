@@ -4,7 +4,6 @@
 import numpy as np
 from random import random, randint
 import matplotlib.pyplot as plt
-import time
 
 # Importing the Kivy packages
 from kivy.app import App
@@ -117,6 +116,8 @@ class Car(Widget):
         self.signal1 = int(np.sum(sand[int(self.sensor1_x)-10:int(self.sensor1_x)+10, int(self.sensor1_y)-10:int(self.sensor1_y)+10]))/400.
         self.signal2 = int(np.sum(sand[int(self.sensor2_x)-10:int(self.sensor2_x)+10, int(self.sensor2_y)-10:int(self.sensor2_y)+10]))/400.
         self.signal3 = int(np.sum(sand[int(self.sensor3_x)-10:int(self.sensor3_x)+10, int(self.sensor3_y)-10:int(self.sensor3_y)+10]))/400.
+
+        # if the car is around the edges of the map, make sand density sensor value 10 to make this state distinct from a state in just sand and not around edges.
         if self.sensor1_x>longueur-10 or self.sensor1_x<10 or self.sensor1_y>largeur-10 or self.sensor1_y<10:
             self.signal1 = 10.
         if self.sensor2_x>longueur-10 or self.sensor2_x<10 or self.sensor2_y>largeur-10 or self.sensor2_y<10:
@@ -220,8 +221,6 @@ class Game(Widget):
         global goal_y1
         global longueur
         global largeur
-        global longueur1
-        global largeur1
         global swap
         global swap1
         
@@ -242,7 +241,7 @@ class Game(Widget):
         orientation = Vector(*self.car.velocity).angle((xx,yy))/180.
         orientation1 = Vector(*self.car1.velocity).angle((xx1,yy1))/180.
 
-        # State contains, signal 1, signal 2, signal 3 & orientation
+        # State contains, signal 1, signal 2, signal 3, orientation & -orientation
         # Signal 1 detects sand density on left side, signal 2 detects in the center and signal 3 on the right.
         last_signal = [self.car.signal1, self.car.signal2, self.car.signal3, orientation, -orientation]
         last_signal1 = [self.car1.signal1, self.car1.signal2, self.car1.signal3, orientation1, -orientation1]
@@ -286,19 +285,6 @@ class Game(Widget):
             else:
                 last_reward = last_reward +(-0.2)
 
-        # if self.car.x < 5:
-        #     self.car.x = 5
-        #     last_reward = -5
-        # if self.car.x > self.width - 5:
-        #     self.car.x = self.width - 5
-        #     last_reward = -5
-        # if self.car.y < 5:
-        #     self.car.y = 5
-        #     last_reward = -5
-        # if self.car.y > self.height - 5:
-        #     self.car.y = self.height - 5
-        #     last_reward = -5
-
         if distance < 25:
             if swap == 1:
                 goal_x = 252
@@ -328,19 +314,6 @@ class Game(Widget):
                 last_reward1 = 0.2
             else:
                 last_reward1 = last_reward1 +(-0.2)
-
-        # if self.car1.x < 5:
-        #     self.car1.x = 5
-        #     last_reward1 = -5
-        # if self.car1.x > self.width - 5:
-        #     self.car1.x = self.width - 5
-        #     last_reward1 = -5
-        # if self.car1.y < 5:
-        #     self.car1.y = 5
-        #     last_reward1 = -5
-        # if self.car1.y > self.height - 5:
-        #     self.car1.y = self.height - 5
-        #     last_reward1 = -5
 
         if distance1 < 25:
             if swap1 == 1:
